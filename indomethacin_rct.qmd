@@ -16,7 +16,10 @@ In this study, 4 centers collaborated to administer either rectal indomethacin s
 #| include: false
 library(tidyverse)
 library(medicaldata)
-
+library(consort)
+library(gtsummary)
+library(patchwork)
+library(forestploter)
 df <- medicaldata::indo_rct
 
 ```
@@ -77,6 +80,16 @@ A total of 295 patients received indomethacin, and 307 patients received placebo
 ```{r}
 # code to generate Table 1
 # use gtsummary package
+tbl_summary(
+  df,
+  include = c('age', 'gender', 'sod', 'pep', 'recpanc', 'difcan', 'precut', 'paninj', 'psphinc', 'acinar', 'bsphinc', 'amp', 'pdstent', 'train'),
+   by = rx,
+  missing = "no"
+)   %>%
+  add_n() %>% # add column with total number of non-missing observations
+  add_p() %>% # test for a difference between groups
+  modify_header(label = "**Variable**") %>% # update the column header
+  bold_labels()
 ```
 
 #### **Table 1.**![](https://www.nejm.org/na101/home/literatum/publisher/mms/journals/content/nejm/2012/nejm_2012.366.issue-15/nejmoa1111103/production/images/img_medium/nejmoa1111103_t1.jpeg)
@@ -88,7 +101,23 @@ The primary outcome of post-ERCP pancreatitis occurred in 79 of 602 patients (13
 All 79 patients with post-ERCP pancreatitis completed the 30-day follow-up necessary to determine the severity of post-ERCP pancreatitis. The secondary outcome of moderate or severe post-ERCP pancreatitis occurred in 40 patients: 13 (4.4%) in the indomethacin group and 27 (8.8%) in the placebo group (P=0.03) ([**Figure 2**](https://www.nejm.org/doi/full/10.1056/NEJMoa1111103# "View full size")). Three patients in each group had severe post-ERCP pancreatitis, and one patient in the placebo group had pancreatic necrosis.
 
 ```{r}
-# code to generate figure 2
+# code to generate figure 2A
+two_a <- df |> 
+  mutate(out = parse_number(as.character(outcome))) |> 
+  group_by(rx) |>  
+  summarize(pct_pep = sum(out)/length(out)) |>  
+  ggplot() +
+  aes(y = pct_pep, x = rx, fill = rx) +
+  geom_col(color = "black") + 
+  scale_fill_manual(values = c('azure2', 'deepskyblue4')) +
+  theme_classic() +
+  ylim(0,0.20) +
+    theme(legend.position = 'top') +
+  labs(y = "Percentage of Patients",
+       x = "Treatment",
+       title = "Post-ERCP Pancreatitis")
+
+two_a
 ```
 
 ![](images/clipboard-2300255229.png)
@@ -111,7 +140,8 @@ The beneficial effect of indomethacin on the primary outcome was also consistent
 
 ```{r}
 # code to generate figure 4
-# use https://github.com/rdboyes/Forest_plot_with_table
+# use https://github.com/rdboyes/Forest_plot_with_table, or
+# package forestploter
 
 ```
 
