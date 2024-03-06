@@ -86,11 +86,11 @@ arm[is.na(exc1)] <- sample(c("Conc", "Seq"), sum(is.na(exc1)), replace = TRUE)
 arm3 <- sample(c("Indomethacin", "Placebo"), N, replace = TRUE)
 arm3[is.na(arm)] <- NA
 
-df <- data.frame(trialno, exc1, induc, exc2, exc1, arm, arm3)
+df_consort <- data.frame(trialno, exc1, induc, exc2, exc1, arm, arm3)
 rm(trialno, exc1, induc, exc2, exc1, arm, arm3, N)
 
 p <- consort_plot(
-  data = df,
+  data = df_consort,
   order = list(
   trialno = "Population",
   exc1 = "Excluded",
@@ -108,6 +108,7 @@ p <- consort_plot(
   ),
  cex = 0.7
 )
+p
 ```
 
 #### ![](images/clipboard-971124796.png)
@@ -169,6 +170,7 @@ The relative benefit of indomethacin did not vary significantly according to pat
 
 ```{r}
 # code to generate figure 3
+
 ```
 
 #### ![](images/clipboard-2828008318.png)
